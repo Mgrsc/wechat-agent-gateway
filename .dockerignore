@@ -1,0 +1,8 @@
+target/
+dev-file/
+.env
+.env.local
+.env.development
+.env.production
+state.json
+tests/
