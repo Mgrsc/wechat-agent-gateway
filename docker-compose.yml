@@ -1,17 +1,10 @@
 services:
   wechat-agent-gateway:
-    build: .
-    image: wechat-agent-gateway:local
+    image: ghcr.io/mgrsc/wechat-agent-gateway:latest
+    env_file:
+      - .env.docker
     ports:
       - "8080:8080"
-    environment:
-      WECHAT_GATEWAY_BIND: 0.0.0.0
-      WECHAT_GATEWAY_PORT: 8080
-      WECHAT_GATEWAY_URL: http://127.0.0.1:8080
-      WECHAT_GATEWAY_STATE_PATH: /data/state.json
-      WECHAT_GATEWAY_BASE_URL: https://ilinkai.weixin.qq.com
-      WECHAT_GATEWAY_CDN_BASE_URL: https://novac2c.cdn.weixin.qq.com
-      RUST_LOG: wechat_agent_gateway=info,tower_http=info
     volumes:
       - wechat-agent-gateway-data:/data
     restart: unless-stopped

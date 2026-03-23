@@ -104,8 +104,10 @@ cargo run -- login
 Start:
 
 ```bash
-docker compose up --build -d
+docker compose up -d
 ```
+
+The compose file loads container runtime settings from [`.env.docker`](/home/ian/dev/clones/wechat-openclaw/.env.docker).
 
 Login:
 
@@ -120,9 +122,10 @@ Published image:
 Release tags:
 
 - `main`
+- `latest`
 - `vX.Y.Z`
 - `X.Y.Z`
-- `latest` on version tags
+- `latest` also updates on `main`
 
 ## 6. Standard Interfaces
 

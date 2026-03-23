@@ -62,11 +62,13 @@ cargo run -- login
 
 ## Docker
 
-构建并启动：
+拉取并启动：
 
 ```bash
-docker compose up --build -d
+docker compose up -d
 ```
+
+Compose 会从 [`.env.docker`](/home/ian/dev/clones/wechat-openclaw/.env.docker) 读取容器运行配置。
 
 在容器内登录：
 
@@ -81,9 +83,10 @@ docker compose exec wechat-agent-gateway wechat-agent-gateway login
 发布标签：
 
 - `main`
+- `latest`
 - `vX.Y.Z`
 - `X.Y.Z`
-- 版本 tag 同步推 `latest`
+- `main` 也会同步更新 `latest`
 
 ## 接口
 
