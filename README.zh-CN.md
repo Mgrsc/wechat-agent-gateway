@@ -4,6 +4,13 @@
 
 `wechat-agent-gateway` 是一个独立的 Rust 微信网关，面向微信官方 bot 通道。
 
+它的协议流程和能力边界参考了腾讯官方包：
+
+- [`@tencent-weixin/openclaw-weixin-cli`](https://www.npmjs.com/package/@tencent-weixin/openclaw-weixin-cli)
+- [`@tencent-weixin/openclaw-weixin`](https://www.npmjs.com/package/@tencent-weixin/openclaw-weixin)
+
+这个项目用 Rust 重写了这层微信通道逻辑，去掉了对 OpenClaw 的专属耦合，并暴露统一的事件/动作接口，方便其他 Agent 后端通过 translator 接入。
+
 它只做三件事：
 
 - 跟微信官方协议通讯

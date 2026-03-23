@@ -4,6 +4,13 @@
 
 `wechat-agent-gateway` is an independent Rust gateway for the official WeChat bot channel.
 
+It is derived from the behavior and protocol flow of Tencent's official packages:
+
+- [`@tencent-weixin/openclaw-weixin-cli`](https://www.npmjs.com/package/@tencent-weixin/openclaw-weixin-cli)
+- [`@tencent-weixin/openclaw-weixin`](https://www.npmjs.com/package/@tencent-weixin/openclaw-weixin)
+
+This project rewrites that WeChat channel layer in Rust, removes the OpenClaw-specific coupling, and exposes a generic event/action gateway interface so other agent backends can integrate through a translator layer.
+
 It does three things:
 
 - talks to the official WeChat bot protocol
