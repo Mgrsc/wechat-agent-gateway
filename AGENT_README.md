@@ -43,6 +43,15 @@ If this gateway is used with OpenClaw, Codex, Claude Code, or any other agent ba
 - Outbound media upload and send
 - Minimal transport-state persistence
 
+Inbound voice behavior:
+
+- A voice event is always exposed as `kind = "voice"`
+- If the upstream WeChat gateway includes speech-to-text in `voice_item.text`, the gateway copies it into:
+  - `event.text`
+  - `media[].transcript`
+- If upstream does not include transcription, both values remain empty and only the audio media is exposed
+- The gateway does not run ASR on its own
+
 ### Explicitly Not Supported
 
 - Outbound `voice`
