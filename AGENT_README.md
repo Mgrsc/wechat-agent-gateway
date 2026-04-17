@@ -223,6 +223,22 @@ Request:
 }
 ```
 
+Field semantics:
+
+- `cursor`
+  - gateway-level event cursor
+  - not the raw WeChat `get_updates_buf`
+- `wait_ms`
+  - intended maximum wait time for the gateway pull request
+  - current implementation does not enforce this as a strict upper bound
+  - if the local queue is empty, the gateway immediately performs one upstream WeChat `getupdates` call
+  - the actual blocking time is therefore mainly determined by upstream WeChat long-poll behavior
+- `limit`
+  - maximum number of normalized gateway events returned in a single `/v1/events/pull` response
+  - this does not directly limit how many raw messages the upstream WeChat `getupdates` call may return
+  - larger values improve per-response throughput
+  - smaller values reduce per-batch processing size
+
 Response example:
 
 ```json

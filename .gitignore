@@ -6,3 +6,4 @@ target/
 .env.production
 state.json
 *.tmp
+.dev/

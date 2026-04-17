@@ -15,6 +15,17 @@ use crate::wechat::WechatUpdatesResponse;
 pub const DEFAULT_WECHAT_BASE_URL: &str = "https://ilinkai.weixin.qq.com";
 pub const DEFAULT_WECHAT_CDN_BASE_URL: &str = "https://novac2c.cdn.weixin.qq.com";
 const CHANNEL_VERSION: &str = env!("CARGO_PKG_VERSION");
+const ILINK_APP_ID: &str = "bot";
+
+fn client_version_u32() -> u32 {
+    let mut parts = CHANNEL_VERSION
+        .split('.')
+        .map(|p| p.parse::<u32>().unwrap_or(0));
+    let major = parts.next().unwrap_or(0) & 0xff;
+    let minor = parts.next().unwrap_or(0) & 0xff;
+    let patch = parts.next().unwrap_or(0) & 0xff;
+    (major << 16) | (minor << 8) | patch
+}
 
 #[derive(Debug, Clone)]
 pub struct WechatClient {
@@ -82,6 +93,7 @@ impl WechatClient {
         let payload = self
             .client
             .get(url)
+            .headers(common_headers()?)
             .send()
             .await
             .map_err(|error| AppError::WechatApi(error.to_string()))?
@@ -111,8 +123,7 @@ impl WechatClient {
             "{}/ilink/bot/get_qrcode_status?qrcode={qrcode}",
             self.base_url
         );
-        let mut headers = HeaderMap::new();
-        headers.insert("iLink-App-ClientVersion", HeaderValue::from_static("1"));
+        let headers = common_headers()?;
 
         info!(url = %sanitize_url(&url), qrcode = "<redacted>", "polling login status");
 
@@ -152,17 +163,7 @@ impl WechatClient {
         get_updates_buf: Option<&str>,
     ) -> Result<WechatUpdatesResponse, AppError> {
         let url = format!("{}/ilink/bot/getupdates", self.base_url);
-        let mut headers = HeaderMap::new();
-        headers.insert(
-            "AuthorizationType",
-            HeaderValue::from_static("ilink_bot_token"),
-        );
-        headers.insert(
-            "Authorization",
-            HeaderValue::from_str(&format!("Bearer {bot_token}"))
-                .map_err(|error| AppError::WechatApi(error.to_string()))?,
-        );
-        headers.insert("X-WECHAT-UIN", random_wechat_uin()?);
+        let headers = auth_headers(bot_token)?;
 
         let mut body = serde_json::json!({
             "base_info": {
@@ -731,8 +732,21 @@ impl WechatClient {
     }
 }
 
-fn auth_headers(bot_token: &str) -> Result<HeaderMap, AppError> {
+fn common_headers() -> Result<HeaderMap, AppError> {
     let mut headers = HeaderMap::new();
+    headers.insert("iLink-App-Id", HeaderValue::from_static(ILINK_APP_ID));
+    headers.insert(
+        "iLink-App-ClientVersion",
+        HeaderValue::from_str(&client_version_u32().to_string())
+            .map_err(|error| AppError::WechatApi(error.to_string()))?,
+    );
+    // SKRouteTag: optional routing header (server-side traffic steering).
+    // Not wired to configuration yet; leave unset unless/until a config entry is added.
+    Ok(headers)
+}
+
+fn auth_headers(bot_token: &str) -> Result<HeaderMap, AppError> {
+    let mut headers = common_headers()?;
     headers.insert(
         "AuthorizationType",
         HeaderValue::from_static("ilink_bot_token"),
